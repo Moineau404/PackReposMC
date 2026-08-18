@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "package": "mod.moineau.packrepos.client.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "MinecraftMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  },
+  "mixins": [
+    "MinecraftMixin"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "mod.moineau.packrepos.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "PackPositionMixin",
+    "ServerPacksSourceMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+	}
+}
