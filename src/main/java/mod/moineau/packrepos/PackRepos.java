@@ -4,6 +4,8 @@ import mod.moineau.packrepos.integration.PackRepositoryProvider;
 import mod.moineau.packrepos.packs.RequiredFolderRepositorySource;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.FolderRepositorySource;
 import net.minecraft.server.packs.repository.Pack;
@@ -15,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 public final class PackRepos implements ModInitializer {
@@ -23,21 +26,41 @@ public final class PackRepos implements ModInitializer {
 	public static final Pack.Position MIDDLE_PACK_POSITION = Pack.Position.valueOf("PACKED_MIDDLE");
 	public static final Path DATA_PACK_DIRECTORY = FabricLoader.getInstance().getGameDir().resolve("datapacks");
 	public static final Path REQUIRED_DATA_PACK_DIRECTORY = FabricLoader.getInstance().getConfigDir().resolve(MOD_ID).resolve("required_datapacks");
+	public static final Path BUNDLED_DATA_PACK_DIRECTORY = FabricLoader.getInstance().getConfigDir().resolve(MOD_ID).resolve("bundled_datapacks");
+	public static final PackSource REQUIRED_PACK_SOURCE = createPackSource("pack.source.required", true);
+	public static final PackSource BUNDLED_PACK_SOURCE = createPackSource("pack.source.bundled", false);
 	public static final DirectoryValidator DIRECTORY_VALIDATOR = LevelStorageSource.parseValidator(FabricLoader.getInstance().getGameDir().resolve("allowed_symlinks.txt"));
 	public static final FolderRepositorySource DATA_PACK_REPOSITORY_SOURCE = new FolderRepositorySource(
 			DATA_PACK_DIRECTORY, PackType.SERVER_DATA, PackSource.DEFAULT, DIRECTORY_VALIDATOR
 	);
 	public static final FolderRepositorySource REQUIRED_DATA_PACK_REPOSITORY_SOURCE = new RequiredFolderRepositorySource(
-			REQUIRED_DATA_PACK_DIRECTORY, PackType.SERVER_DATA, PackSource.DEFAULT, DIRECTORY_VALIDATOR
+			REQUIRED_DATA_PACK_DIRECTORY, PackType.SERVER_DATA, REQUIRED_PACK_SOURCE, DIRECTORY_VALIDATOR
 	);
-
-	public static Stream<RepositorySource> getAdditionalDataPackRepositorySources() {
-		return FabricLoader.getInstance().getEntrypoints("packrepos", PackRepositoryProvider.class).stream().flatMap(PackRepositoryProvider::provideDataPackRepositorySources);
-	}
+	public static final FolderRepositorySource BUNDLED_DATA_PACK_REPOSITORY_SOURCE = new RequiredFolderRepositorySource(
+			BUNDLED_DATA_PACK_DIRECTORY, PackType.SERVER_DATA, BUNDLED_PACK_SOURCE, DIRECTORY_VALIDATOR
+	);
 
 	@Override
 	public void onInitialize() {
 		DATA_PACK_DIRECTORY.toFile().mkdirs();
 		REQUIRED_DATA_PACK_DIRECTORY.toFile().mkdirs();
+		BUNDLED_DATA_PACK_DIRECTORY.toFile().mkdirs();
+	}
+
+	public static Stream<RepositorySource> getDataPackRepositorySources() {
+		return Stream.concat(
+				Stream.of(DATA_PACK_REPOSITORY_SOURCE, REQUIRED_DATA_PACK_REPOSITORY_SOURCE, BUNDLED_DATA_PACK_REPOSITORY_SOURCE),
+				getAdditionalDataPackRepositorySources()
+		);
+	}
+
+	private static Stream<RepositorySource> getAdditionalDataPackRepositorySources() {
+		return FabricLoader.getInstance().getEntrypoints("packrepos", PackRepositoryProvider.class).stream().flatMap(PackRepositoryProvider::provideDataPackRepositorySources);
+	}
+
+	private static PackSource createPackSource(final String descriptionId, final boolean addAutomatically) {
+		Component description = Component.translatable(descriptionId);
+		UnaryOperator<Component> decorator = (packDescription) -> Component.translatable("pack.nameAndSource", packDescription, description).withStyle(ChatFormatting.GRAY);
+		return PackSource.create(decorator, addAutomatically);
 	}
 }

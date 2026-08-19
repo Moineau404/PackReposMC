@@ -14,12 +14,6 @@ import java.util.stream.Stream;
 public abstract class MinecraftMixin {
     @ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/repository/PackRepository;<init>([Lnet/minecraft/server/packs/repository/RepositorySource;)V"))
     private RepositorySource[] inject$init_clientPackSource(RepositorySource[] sources) {
-        return Stream.concat(
-                Arrays.stream(sources),
-                Stream.concat(
-                        Stream.of(PackReposClient.REQUIRED_DATA_PACK_REPOSITORY_SOURCE),
-                        PackReposClient.getAdditionalResourcePackRepositorySources()
-                )
-        ).toArray(RepositorySource[]::new);
+        return Stream.concat(Arrays.stream(sources), PackReposClient.getDataPackRepositorySources()).toArray(RepositorySource[]::new);
     }
 }
