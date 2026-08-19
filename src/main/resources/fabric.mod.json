@@ -2,10 +2,10 @@
 	"schemaVersion": 1,
 	"id": "packrepos",
 	"version": "${version}",
-	"name": "Packed",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"name": "Pack Repos",
+	"description": "Data packs repository and required packs folder!",
 	"authors": [
-		"Me!"
+		"Moineau"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
@@ -20,9 +20,6 @@
 		],
 		"client": [
 			"mod.moineau.packrepos.client.PackReposClient"
-		],
-		"packrepos": [
-			"mod.moineau.packrepos.client.TestEntrypoint"
 		]
 	},
 	"mixins": [

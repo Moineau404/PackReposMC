@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 
 public final class PackRepos implements ModInitializer {
 	public static final String MOD_ID = "packrepos";
-	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+	public static final Logger LOGGER = LoggerFactory.getLogger("PackRepos");
 	public static final Pack.Position MIDDLE_PACK_POSITION = Pack.Position.valueOf("PACKED_MIDDLE");
 	public static final Path DATA_PACK_DIRECTORY = FabricLoader.getInstance().getGameDir().resolve("datapacks");
 	public static final Path REQUIRED_DATA_PACK_DIRECTORY = FabricLoader.getInstance().getConfigDir().resolve(MOD_ID).resolve("required_datapacks");
